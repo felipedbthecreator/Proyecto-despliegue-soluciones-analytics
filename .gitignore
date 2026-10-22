@@ -1,0 +1,14 @@
+.DS_Store
+.env
+__pycache__/
+.ipynb_checkpoints/
+
+# Datos descargados y resultados generados
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/raw/*.dvc
+!data/processed/.gitkeep
+
+# Archivos locales de DVC
+.dvc/cache/
