@@ -1,7 +1,8 @@
-# Proyecto EVA: despliegue de soluciones analíticas
+# Proyecto de la Maestría en Inteligencia de Análisis de Datos para estimar el rendimiento agrícola municipal de arroz, papa y caña.
 
-Proyecto de la Maestría en Inteligencia de Análisis de Datos para estimar el
-rendimiento agrícola municipal de arroz, papa y caña.
+**Curso:** Despliegue de soluciones analíticas — MIAD 2026  
+**Equipo:** María Valentina Páez Romero, Samuel Esteban Vargas, Felipe Delgadillo Barrera y Juan Esteban Misas Ramírez  
+**Entrega:** exploración de la base agrícola EVA 2019–2025
 
 
 Este proyecto, desarrollado en el curso Despliegue de soluciones analíticas de la Maestría en Inteligencia de Análisis de Datos (Universidad de los Andes), busca estimar el rendimiento agrícola municipal (toneladas por hectárea) de arroz, papa y caña de azúcar los cuales son muy importantes en la producció agricola de Colombia, y explorar cómo cambia bajo distintos escenarios climáticos, en particular frente al fenómeno de El Niño. Su insumo principal son las Evaluaciones Agropecuarias Municipales (EVA) de la UPRA, publicadas como datos abiertos en datos.gov.co, que reportan por municipio y periodo el área sembrada y cosechada, la producción y el rendimiento entre 2019 y 2025. La hipótesis central es que, en periodos con El Niño, el rendimiento del arroz de secano cae más que el del arroz de riego, por su mayor dependencia de la lluvia. El producto final será un prototipo con modelos supervisados empaquetados, una API que sirva las predicciones y un tablero para consultarlas por municipio, cultivo y escenario, desplegado con contenedores Docker.
