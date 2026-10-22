@@ -14,19 +14,16 @@ python src/eda_eva.py
 ```
 
 La descarga usa el token opcional `SOCRATA_TOKEN` si está definido como
-variable de entorno. Nunca se debe escribir el token en el repositorio.
+variable de entorno.
 
 ## Decisiones de limpieza
 
-- Se conservan arroz, papa y caña.
-- Se conservan las variantes de arroz y las variantes azúcar/panelera de caña.
-- Se excluye caña miel.
-- Se excluyen periodos anuales de arroz/papa y periodos semestrales de caña.
-- Se deriva `Papa todas menos criolla` a partir de las filas de papa total.
-- Se valida que la criolla no supere el total antes de hacer la resta. Cuando
-  la validación falla, se usa el total y se excluye la criolla para esa llave.
-  Las llaves sin total correspondiente se conservan como criolla, pero no
-  generan una fila derivada.
+- Se conservan arroz, papa y caña: se conservan solo las de arroz, papa y caña de azúcar (unas 15.100 filas, cerca del 9% del total), porque son los cultivos definidos como foco del proyecto. Además cubren casos distintos frente al clima: dos transitorios con datos semestrales (arroz y papa) y un permanente con datos anuales (caña). El resto de cultivos de la base queda fuera para mantener el alcance acotado y la pregunta de negocio coherente.
+- Se conservan las variantes de arroz y las variantes azúcar/panelera de caña:  arroz de riego, secano manual y secano mecanizado, y caña de azúcar y caña panelera. En el arroz, la variante  permite contrastar la hipótesis central, que el arroz de secano que es más dependiente de la lluvia, pierde más rendimiento que el de riego en periodos con El Niño. En la caña, azúcar y panelera se tratan como variantes de un mismo cultivo, lo que aporta más municipios y más diversidad climática que usar solo la caña de azúcar (57 municipios frente a 581 de la panelera).
+- Se excluye caña miel pues su producción no es relevante para el sector cañicultor: Se excluye porque su peso es marginal: en la base representa apenas el 0,4% de la producción y el 1,0% del área cosechada de caña, frente al 70% y 55% de la caña de azúcar y el 30% y 44% de la panelera.
+- Se excluyen periodos anuales de arroz/papa pues estos y periodos semestrales de caña: La EVA reporta los cultivos transitorios por semestre (por ejemplo 2021A y 2021B) y los permanentes por año (2021). Para evitar mezclar escalas temporales, el modelo de arroz y papa usa solo periodos semestrales, y el de caña solo anuales. 
+- Se deriva `Papa todas menos criolla` a partir de las filas de papa total: La base publica la papa criolla y el total de papa (“todas las variedades”), y este último incluye a la criolla.
+- Se valida que la criolla no supere el total antes de hacer la resta: Antes de restar se verifica que la criolla no supere al total en ninguna de las tres medidas, porque un subconjunto no puede ser mayor que el conjunto.
 - El rendimiento se recalcula como producción dividida por área cosechada.
 
 Los datos descargados se versionan con DVC, no con Git:
