@@ -9,18 +9,7 @@ Este proyecto, desarrollado en el curso Despliegue de soluciones analíticas de 
 
 Este repositorio corresponde a la Entrega 1 e incluye la descarga reproducible de los datos desde la API de datos.gov.co, su limpieza y transformación, la exploración inicial y la documentación de la maqueta del tablero. El código se versiona con Git y los datos con DVC, de modo que cualquier integrante del equipo pueda reproducir el trabajo clonando el repositorio y recuperando los datos con `dvc pull`. Las decisiones de limpieza, las limitaciones de la fuente y los hallazgos de la exploración se detallan en el cuaderno jupyter que hace parte de este repositorio.
 
-## Preparación local
-
-```bash
-conda activate MIAD2026  
-pip install pandas numpy requests
-python src/descargar_eva.py
-python src/limpiar_eva.py
-python src/eda_eva.py
-```
-
-La descarga usa el token opcional `SOCRATA_TOKEN` si está definido como
-variable de entorno.
+La descarga usa el token opcional `SOCRATA_TOKEN` 
 
 ## Decisiones de limpieza
 
@@ -32,7 +21,7 @@ variable de entorno.
 - Se valida que la criolla no supere el total antes de hacer la resta: Antes de restar se verifica que la criolla no supere al total en ninguna de las tres medidas, porque un subconjunto no puede ser mayor que el conjunto.
 - El rendimiento se recalcula como producción dividida por área cosechada.
 
-Los datos descargados se versionan con DVC, no con Git:
+Los datos descargados se versionan con DVC:
 
 ```bash
 dvc add data/raw/eva_2019_2025.json
