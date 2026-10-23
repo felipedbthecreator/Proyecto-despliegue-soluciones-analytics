@@ -4,11 +4,10 @@ __pycache__/
 .ipynb_checkpoints/
 
 # Datos descargados y resultados generados
-data/raw/*
+data/raw/eva_2019_2025.json
 data/processed/*
-!data/raw/.gitkeep
-!data/raw/*.dvc
 !data/processed/.gitkeep
 
 # Archivos locales de DVC
 .dvc/cache/
+
