@@ -1,0 +1,5 @@
+outs:
+- md5: b459b78714be45116afdf72bf0e5c4ae
+  size: 15657
+  hash: md5
+  path: roni.txt
