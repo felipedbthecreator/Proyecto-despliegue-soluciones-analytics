@@ -49,3 +49,6 @@ Decisiones:
 - Se guardan los valores del periodo anterior para capturar el rezago entre la siembra y la cosecha.
 
 Nota aclaratoria: las fases ENSO definidas manualmente en `src/analisis_arroz_enso.py` son provisionales. En la Entrega 2 se reemplazarán por `data/processed/roni_periodos.csv`.
+## Maqueta del tablero
+
+La maqueta interactiva está en `cuaderno y mockup/tablero_mockup.html` (se abre directamente en el navegador) y su documentación, con la relación de cada elemento con la pregunta de negocio, en `cuaderno y mockup/maqueta_tablero.md`. Las cifras de la maqueta son ilustrativas; en la Entrega 2 el tablero consumirá la API `POST /predict`.

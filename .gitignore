@@ -11,3 +11,4 @@ data/processed/*
 # Archivos locales de DVC
 .dvc/cache/
 
+.Rhistory
