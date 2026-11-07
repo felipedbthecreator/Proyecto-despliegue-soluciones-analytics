@@ -8,7 +8,11 @@ data/raw/eva_2019_2025.json
 data/processed/*
 !data/processed/.gitkeep
 
-# Archivos locales de DVC
+# Editor, R y MLflow local
 .dvc/cache/
 
 .venv/
+.Rhistory
+.vscode/
+mlruns/
+mlflow.db

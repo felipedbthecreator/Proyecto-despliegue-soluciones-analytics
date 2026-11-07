@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maqueta – Rendimiento agrícola esperado bajo El Niño</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!--
+  Maqueta (mockup) del tablero – Entrega 1, Despliegue de Soluciones Analíticas (MIAD).
+  Archivo autocontenido: se abre directamente en el navegador, sin servidor ni dependencias.
+  TODOS LOS VALORES SON ILUSTRATIVOS. Las medianas nacionales por variante provienen de la
+  Tabla 5 del reporte (src/eda_eva.py); los efectos por escenario y los valores municipales
+  son ficticios y solo muestran cómo se verá la respuesta de la API.
+-->
+<style>
+:root{
+  --bg:#EDF1EC; --surface:#FFFFFF; --surface-2:#F6F8F5;
+  --ink:#1B2A23; --muted:#5B6B62; --line:#D2DBD3;
+  --primary:#24564A; --primary-ink:#FFFFFF; --primary-soft:#DCE9E3;
+  --nino:#B4432E; --nino-soft:#F4DDD6;
+  --nina:#2E6CA4; --nina-soft:#D9E6F2;
+  --neutro:#7F8A83; --neutro-soft:#E6EAE6;
+  --focus:#E0A100;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121915; --surface:#1A231E; --surface-2:#202B25;
+    --ink:#E4EBE6; --muted:#9DAEA4; --line:#2F3C35;
+    --primary:#6FB39E; --primary-ink:#0E1A15; --primary-soft:#21372F;
+    --nino:#E2775F; --nino-soft:#3E2620;
+    --nina:#6EA6DA; --nina-soft:#1E3043;
+    --neutro:#9AA59E; --neutro-soft:#2A322D;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121915; --surface:#1A231E; --surface-2:#202B25;
+  --ink:#E4EBE6; --muted:#9DAEA4; --line:#2F3C35;
+  --primary:#6FB39E; --primary-ink:#0E1A15; --primary-soft:#21372F;
+  --nino:#E2775F; --nino-soft:#3E2620;
+  --nina:#6EA6DA; --nina-soft:#1E3043;
+  --neutro:#9AA59E; --neutro-soft:#2A322D;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Libre Franklin","Helvetica Neue",Arial,sans-serif;
+  font-size:15px; line-height:1.45;
+  font-variant-numeric: tabular-nums;
+}
+button,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+/* ---------- Barra superior ---------- */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  padding:14px 28px; background:var(--primary); color:var(--primary-ink);
+}
+.brand{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap}
+.brand h1{margin:0; font-size:20px; font-weight:800; letter-spacing:-.01em}
+.brand span{font-size:13px; opacity:.85}
+.phase-pill{
+  display:flex; align-items:center; gap:10px; font-size:13px;
+  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25);
+  padding:6px 12px; border-radius:999px;
+}
+.phase-dot{width:10px;height:10px;border-radius:50%;background:#F08A6E;box-shadow:0 0 0 3px rgba(240,138,110,.3)}
+.mock-banner{
+  background:#FFF4CC; color:#5A4500; font-size:12.5px; padding:6px 28px; border-bottom:1px solid #E8D58A;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .mock-banner{background:#3A3215;color:#F1E2A8;border-color:#5A4C1C} }
+
+/* ---------- Layout ---------- */
+.layout{
+  display:grid; grid-template-columns:280px minmax(0,1fr); gap:20px;
+  padding:20px 28px 28px; max-width:1440px; margin:0 auto;
+}
+@media (max-width:900px){ .layout{grid-template-columns:minmax(0,1fr); padding:16px} .filters{position:static} .topbar{padding:14px 16px} .mock-banner{padding:6px 16px} }
+
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:10px}
+.panel-pad{padding:18px 20px}
+.panel h2{margin:0 0 2px; font-size:16px; font-weight:700}
+.panel .sub{margin:0 0 14px; color:var(--muted); font-size:13px}
+
+/* ---------- Filtros ---------- */
+.filters{position:sticky; top:16px; align-self:start}
+.field{margin-bottom:14px}
+.field label, .field .lbl{display:block; font-size:13px; font-weight:600; margin-bottom:5px}
+select{
+  width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:7px; background:var(--surface-2);
+}
+.seg{display:grid; grid-template-columns:repeat(3,1fr); border:1px solid var(--line); border-radius:7px; overflow:hidden}
+.seg button{
+  border:0; background:var(--surface-2); padding:8px 4px; cursor:pointer; font-size:14px;
+  border-right:1px solid var(--line);
+}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--primary); color:var(--primary-ink); font-weight:600}
+.btn-primary{
+  width:100%; padding:10px; border:0; border-radius:7px; cursor:pointer;
+  background:var(--primary); color:var(--primary-ink); font-weight:700; font-size:14px;
+}
+.btn-primary:hover{filter:brightness(1.08)}
+.hint{font-size:12px; color:var(--muted); margin:12px 0 0}
+.api-box{
+  margin-top:16px; padding:10px 12px; background:var(--surface-2); border:1px dashed var(--line); border-radius:7px;
+  font-size:12px; color:var(--muted);
+}
+.api-box code{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11.5px; color:var(--ink); word-break:break-all}
+
+/* ---------- Principal ---------- */
+.main{display:grid; gap:20px; min-width:0}
+.context-line{font-size:14px; color:var(--muted); margin:0}
+.context-line strong{color:var(--ink)}
+
+/* Comparación de escenarios (elemento central) */
+.scen-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px}
+@media (max-width:700px){ .scen-grid{grid-template-columns:minmax(0,1fr)} }
+.scen{
+  border-radius:9px; padding:14px 16px 12px; border:1px solid var(--line); background:var(--surface-2);
+  position:relative;
+}
+.scen.nino{border-top:5px solid var(--nino)}
+.scen.neutro{border-top:5px solid var(--neutro)}
+.scen.nina{border-top:5px solid var(--nina)}
+.scen.current{background:var(--nino-soft)}
+.scen h3{margin:0; font-size:14px; font-weight:700; display:flex; justify-content:space-between; align-items:center; gap:8px}
+.tag{font-size:11px; font-weight:600; padding:2px 8px; border-radius:999px; background:var(--nino); color:#fff; white-space:nowrap}
+.scen .val{font-size:40px; font-weight:800; letter-spacing:-.02em; line-height:1.05; margin:8px 0 0}
+.scen .val small{font-size:15px; font-weight:600; color:var(--muted); margin-left:4px}
+.scen .ci{font-size:12.5px; color:var(--muted); margin:2px 0 8px}
+.scen .delta{font-size:13.5px; font-weight:600}
+.delta.down{color:var(--nino)} .delta.up{color:var(--nina)} .delta.flat{color:var(--muted)}
+
+.range-chart{margin-top:16px}
+.range-chart svg{width:100%; height:auto; display:block}
+.insight{
+  margin:14px 0 0; padding:10px 14px; border-left:4px solid var(--primary); background:var(--primary-soft);
+  border-radius:0 7px 7px 0; font-size:14px;
+}
+
+/* Indicadores de contexto */
+.kpis{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px}
+@media (max-width:1100px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
+.kpi{padding:14px 16px}
+.kpi .k-lbl{font-size:12.5px; color:var(--muted)}
+.kpi .k-val{font-size:24px; font-weight:700; margin-top:2px}
+.kpi .k-val small{font-size:13px; color:var(--muted); font-weight:500}
+.kpi .k-foot{font-size:12px; color:var(--muted); margin-top:2px}
+
+/* Gráficas */
+.two-col{display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:20px}
+@media (max-width:1100px){ .two-col{grid-template-columns:minmax(0,1fr)} }
+.chart-wrap{overflow-x:auto}
+.chart-wrap svg{display:block; width:100%; min-width:520px; height:auto}
+.legend{display:flex; gap:16px; flex-wrap:wrap; font-size:12.5px; color:var(--muted); margin-top:8px}
+.legend i{display:inline-block; width:12px; height:12px; border-radius:2px; vertical-align:-2px; margin-right:5px}
+.axis text{fill:var(--muted); font-size:11px}
+.axis line,.axis path{stroke:var(--line)}
+
+/* Ranking */
+.rank{list-style:none; margin:0; padding:0}
+.rank li{display:grid; grid-template-columns:110px 1fr 56px; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--line); font-size:13.5px}
+.rank li:last-child{border-bottom:0}
+.rank li.sel{font-weight:700}
+.rank .bar{height:10px; background:var(--neutro-soft); border-radius:3px; position:relative; overflow:hidden}
+.rank .bar span{position:absolute; left:0; top:0; bottom:0; background:var(--nino); border-radius:3px}
+.rank .pct{text-align:right; color:var(--nino); font-weight:600}
+
+.note{
+  font-size:12.5px; color:var(--muted); padding:14px 18px; border:1px solid var(--line); border-radius:10px; background:var(--surface);
+}
+.note strong{color:var(--ink)}
+.empty{font-size:13.5px; color:var(--muted); padding:20px 0}
+
+/* Marcadores de anotación (para la figura del reporte; se activan con #anotada) */
+.mk{display:none}
+body.annot .mk{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:24px; border-radius:50%; background:#E0A100; color:#1B2A23;
+  font-size:13px; font-weight:800; margin-right:8px; flex:none; vertical-align:middle;
+  box-shadow:0 0 0 3px rgba(224,161,0,.3);
+}
+@media (prefers-reduced-motion: no-preference){
+  .scen .val, .rank .bar span{transition:all .35s ease}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <h1><span class="mk">1</span>Rendimiento agrícola esperado</h1>
+    <span>Arroz, papa y caña por municipio y escenario climático</span>
+  </div>
+  <div class="phase-pill" title="Fase según el último trimestre del RONI (NOAA/CPC)">
+    <span class="phase-dot" aria-hidden="true"></span>
+    <span>Fase actual: <strong>El Niño</strong> (RONI ASO 2026)</span>
+  </div>
+</header>
+<div class="mock-banner" role="note">Maqueta del prototipo. Las cifras son ilustrativas y no corresponden a predicciones reales del modelo.</div>
+
+<div class="layout">
+
+  <!-- ===== Filtros ===== -->
+  <aside class="panel panel-pad filters" aria-label="Consulta">
+    <h2><span class="mk">2</span>Consulta</h2>
+    <p class="sub">Elija el municipio, el cultivo y el periodo a estimar.</p>
+
+    <div class="field">
+      <label for="dep">Departamento</label>
+      <select id="dep"></select>
+    </div>
+    <div class="field">
+      <label for="mun">Municipio</label>
+      <select id="mun"></select>
+    </div>
+    <div class="field">
+      <span class="lbl" id="cult-lbl">Cultivo</span>
+      <div class="seg" role="group" aria-labelledby="cult-lbl" id="cult"></div>
+    </div>
+    <div class="field">
+      <label for="var">Variante</label>
+      <select id="var"></select>
+    </div>
+    <div class="field">
+      <label for="per">Periodo a estimar</label>
+      <select id="per"></select>
+    </div>
+    <button class="btn-primary" id="run">Calcular rendimiento esperado</button>
+    <p class="hint">El modelo solo usa información conocida antes de la cosecha: municipio, cultivo, variante, periodo y fase de El Niño. No usa área cosechada ni producción.</p>
+
+    <div class="api-box" aria-label="Llamada a la API">
+      <span class="mk">8</span>Petición a la API (una por escenario):<br>
+      <code id="api-call">POST /predict</code>
+    </div>
+  </aside>
+
+  <!-- ===== Principal ===== -->
+  <main class="main">
+
+    <p class="context-line" id="ctx"></p>
+
+    <!-- Comparación de escenarios -->
+    <section class="panel panel-pad" aria-labelledby="scen-h">
+      <h2 id="scen-h"><span class="mk">3</span>Rendimiento esperado según el escenario climático</h2>
+      <p class="sub" id="scen-sub">Estimación del modelo en t/ha con intervalo de predicción del 80%.</p>
+      <div class="scen-grid" id="scen-grid"></div>
+      <div class="range-chart" id="range-chart" aria-hidden="true"></div>
+      <p class="insight" id="insight"></p>
+    </section>
+
+    <!-- Indicadores -->
+    <section class="kpis" aria-label="Indicadores de contexto" id="kpis"></section>
+
+    <!-- Histórico + variantes -->
+    <div class="two-col">
+      <section class="panel panel-pad" aria-labelledby="hist-h">
+        <h2 id="hist-h"><span class="mk">5</span>Rendimiento histórico del municipio</h2>
+        <p class="sub">Rendimiento observado por periodo (EVA 2019–2025) con las fases del RONI sombreadas.</p>
+        <div class="chart-wrap" id="hist"></div>
+        <div class="legend">
+          <span><i style="background:var(--primary)"></i>Municipio</span>
+          <span><i style="background:var(--muted);height:2px;vertical-align:3px"></i>Mediana nacional de la variante</span>
+          <span><i style="background:var(--nino-soft);border:1px solid var(--nino)"></i>El Niño</span>
+          <span><i style="background:var(--nina-soft);border:1px solid var(--nina)"></i>La Niña</span>
+        </div>
+      </section>
+
+      <section class="panel panel-pad" aria-labelledby="var-h">
+        <h2 id="var-h"><span class="mk">6</span>Variantes del cultivo en el municipio</h2>
+        <p class="sub" id="var-sub">Rendimiento esperado de cada variante en los tres escenarios.</p>
+        <div class="chart-wrap" id="variants"></div>
+        <div class="legend">
+          <span><i style="background:var(--nino)"></i>El Niño</span>
+          <span><i style="background:var(--neutro)"></i>Neutro</span>
+          <span><i style="background:var(--nina)"></i>La Niña</span>
+        </div>
+      </section>
+    </div>
+
+    <!-- Ranking -->
+    <section class="panel panel-pad" aria-labelledby="rank-h">
+      <h2 id="rank-h"><span class="mk">7</span>Municipios del departamento más sensibles a El Niño</h2>
+      <p class="sub" id="rank-sub">Cambio del rendimiento esperado bajo El Niño frente al escenario neutro, para la misma variante y periodo.</p>
+      <ul class="rank" id="rank"></ul>
+    </section>
+
+    <p class="note"><strong>Cómo leer estas cifras.</strong> El tablero compara escenarios: no pronostica el clima que ocurrirá ni garantiza que la diferencia se deba solo al clima. Entre 2019 y 2025 hubo un único episodio fuerte de El Niño (2023B), y en esos años también cambiaron precios, insumos y área sembrada. En la caña, reportada por año, el escenario de El Niño se estima con menos información. Fuentes: EVA 2019–2025 (UPRA, datos.gov.co) e índice RONI (NOAA/CPC). Modelo: <em>rendimiento-v0</em> registrado en MLflow.</p>
+
+  </main>
+</div>
+
+<script>
+/* ======================================================================
+   DATOS DE LA MAQUETA (ilustrativos)
+   ====================================================================== */
+const CROPS = {
+  arroz:{label:"Arroz", period:"sem", variants:{
+    riego:{label:"Riego", nat:6.26, eff:{nino:-0.04, nina:-0.01}},
+    secano_mec:{label:"Secano mecanizado", nat:5.13, eff:{nino:-0.11, nina:0.02}},
+    secano_man:{label:"Secano manual", nat:2.38, eff:{nino:-0.15, nina:0.03}},
+  }},
+  papa:{label:"Papa", period:"sem", variants:{
+    resto:{label:"Todas menos criolla", nat:20.0, eff:{nino:-0.09, nina:0.01}},
+    criolla:{label:"Criolla", nat:14.0, eff:{nino:-0.13, nina:0.02}},
+  }},
+  cana:{label:"Caña", period:"anual", variants:{
+    azucar:{label:"Caña de azúcar", nat:113.31, eff:{nino:-0.03, nina:0.01}},
+    panelera:{label:"Caña panelera", nat:50.0, eff:{nino:-0.07, nina:0.02}},
+  }},
+};
+
+// Municipios de ejemplo y variantes reportadas en cada uno
+const GEO = {
+  "Tolima":{
+    "Ibagué":["riego","secano_mec","panelera"], "Espinal":["riego","secano_mec"], "Saldaña":["riego"],
+    "Natagaima":["riego","secano_man"], "Ambalema":["riego","secano_mec"], "Purificación":["riego","secano_mec","secano_man"],
+    "Líbano":["panelera","resto"]
+  },
+  "Meta":{
+    "Villavicencio":["riego","secano_mec","panelera"], "Puerto López":["secano_mec","riego"], "Granada":["secano_mec","secano_man","panelera"],
+    "Cabuyaro":["secano_mec"], "San Martín":["secano_mec","riego"]
+  },
+  "Casanare":{
+    "Yopal":["riego","secano_mec"], "Aguazul":["riego","secano_mec"], "Villanueva":["secano_mec","riego"], "Paz de Ariporo":["secano_mec","secano_man"]
+  },
+  "Boyacá":{
+    "Ventaquemada":["resto","criolla"], "Siachoque":["resto","criolla"], "Samacá":["resto","criolla"], "Tunja":["resto","criolla"],
+    "Moniquirá":["panelera"]
+  },
+  "Cundinamarca":{
+    "Villapinzón":["resto","criolla"], "Zipaquirá":["resto","criolla"], "Tausa":["resto","criolla"], "Subachoque":["resto","criolla"],
+    "Útica":["panelera"], "Villeta":["panelera"]
+  },
+  "Nariño":{
+    "Ipiales":["resto","criolla"], "Túquerres":["resto","criolla"], "Pasto":["resto","criolla"], "Guachucal":["resto","criolla"], "Sandoná":["panelera"]
+  },
+  "Valle del Cauca":{
+    "Palmira":["azucar"], "Candelaria":["azucar"], "Florida":["azucar","panelera"], "Pradera":["azucar","panelera"], "El Cerrito":["azucar"]
+  },
+  "Santander":{
+    "Barbosa":["panelera"], "Vélez":["panelera"], "Güepsa":["panelera"], "Socorro":["panelera"], "Sabana de Torres":["secano_mec","riego"]
+  }
+};
+
+// Fases del RONI por semestre (Tabla/Figura 6 del reporte)
+const PHASE_SEM = {"2019A":"nino","2019B":"neutro","2020A":"neutro","2020B":"nina","2021A":"nina","2021B":"nina",
+  "2022A":"nina","2022B":"nina","2023A":"nina","2023B":"nino","2024A":"neutro","2024B":"nina","2025A":"nina","2025B":"neutro"};
+const YEARS = ["2019","2020","2021","2022","2023","2024","2025"];
+const PHASE_YEAR = {"2019":"neutro","2020":"nina","2021":"nina","2022":"nina","2023":"neutro","2024":"neutro","2025":"neutro"};
+
+/* Generador pseudoaleatorio determinista: el mismo municipio siempre muestra lo mismo */
+function hash(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function rng(seed){let x=seed||1;return()=>{x^=x<<13;x^=x>>>17;x^=x<<5;return((x>>>0)%10000)/10000}}
+
+function muniFactor(dep,mun,v){ const r=rng(hash(dep+mun+v)); return 0.82+r()*0.36; }
+function muniSens(dep,mun,v){ const r=rng(hash("s"+dep+mun+v)); return 0.6+r()*0.9; }
+
+function cropOf(v){ for(const k in CROPS) if(CROPS[k].variants[v]) return k; }
+
+/* Simula la respuesta de la API para los tres escenarios */
+function predict(dep,mun,v){
+  const c=CROPS[cropOf(v)], vv=c.variants[v];
+  const base=vv.nat*muniFactor(dep,mun,v), s=muniSens(dep,mun,v);
+  const width = c.period==="anual" ? 0.13 : 0.10;
+  const out={};
+  for(const sc of ["nino","neutro","nina"]){
+    const e = sc==="neutro"?0:vv.eff[sc]*s;
+    const y = base*(1+e);
+    const w = width*(sc==="nino" && c.period==="anual" ? 1.5 : sc==="nino" ? 1.25 : 1);
+    out[sc]={y, lo:y*(1-w), hi:y*(1+w)};
+  }
+  return out;
+}
+
+function history(dep,mun,v){
+  const c=CROPS[cropOf(v)], vv=c.variants[v], r=rng(hash("h"+dep+mun+v));
+  const base=vv.nat*muniFactor(dep,mun,v), s=muniSens(dep,mun,v);
+  const periods = c.period==="anual"?YEARS:Object.keys(PHASE_SEM);
+  const round = (v==="panelera"||v==="criolla"||v==="azucar");
+  return periods.map((p,i)=>{
+    const ph = c.period==="anual"?PHASE_YEAR[p]:PHASE_SEM[p];
+    let y = base*(0.94+i*0.008)*(1+(r()-0.5)*0.14);
+    if(ph==="nino") y*=1+vv.eff.nino*s*0.6;
+    if(round) y=Math.round(y);
+    return {p, ph, y};
+  });
+}
+
+/* ======================================================================
+   UTILIDADES DE FORMATO
+   ====================================================================== */
+const fmt=(x,d=1)=>x.toLocaleString("es-CO",{minimumFractionDigits:d,maximumFractionDigits:d});
+const dec = v => CROPS[cropOf(v)].period==="anual" ? 0 : 1;
+const pct = x => (x>0?"+":x<0?"−":"")+fmt(Math.abs(x*100),1)+" %";
+const SCN = {nino:"El Niño", neutro:"Neutro", nina:"La Niña"};
+const CSSV = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+/* ======================================================================
+   ESTADO Y CONTROLES
+   ====================================================================== */
+const state={dep:"Tolima", mun:"Purificación", crop:"arroz", v:"secano_mec"};
+const $=id=>document.getElementById(id);
+
+function availableCrops(){ const set=new Set(GEO[state.dep][state.mun].map(cropOf)); return set; }
+
+function fillDep(){
+  $("dep").innerHTML=Object.keys(GEO).map(d=>`<option ${d===state.dep?"selected":""}>${d}</option>`).join("");
+}
+function fillMun(){
+  const ms=Object.keys(GEO[state.dep]);
+  if(!ms.includes(state.mun)) state.mun=ms[0];
+  $("mun").innerHTML=ms.map(m=>`<option ${m===state.mun?"selected":""}>${m}</option>`).join("");
+}
+function fillCrop(){
+  const av=availableCrops();
+  if(!av.has(state.crop)) state.crop=[...av][0];
+  $("cult").innerHTML=Object.entries(CROPS).map(([k,c])=>
+    `<button type="button" data-k="${k}" aria-pressed="${k===state.crop}" ${av.has(k)?"":"disabled title='Sin reporte en este municipio' style='opacity:.4;cursor:not-allowed'"}>${c.label}</button>`).join("");
+}
+function fillVar(){
+  const vs=GEO[state.dep][state.mun].filter(v=>cropOf(v)===state.crop);
+  if(!vs.includes(state.v)) state.v=vs[0];
+  $("var").innerHTML=vs.map(v=>`<option value="${v}" ${v===state.v?"selected":""}>${CROPS[state.crop].variants[v].label}</option>`).join("");
+}
+function fillPer(){
+  $("per").innerHTML = CROPS[state.crop].period==="anual"
+    ? `<option>2026</option><option>2027</option>`
+    : `<option>2026B</option><option>2027A</option>`;
+}
+function refreshControls(){ fillMun(); fillCrop(); fillVar(); fillPer(); }
+
+/* ======================================================================
+   RENDER
+   ====================================================================== */
+function render(){
+  const {dep,mun,v}=state, c=CROPS[state.crop], vv=c.variants[v], d=dec(v);
+  const per=$("per").value;
+  const P=predict(dep,mun,v);
+
+  const cropTxt = state.crop==="cana" ? vv.label : `${c.label} ${vv.label.toLowerCase()}`;
+  $("ctx").innerHTML=`Consulta: <strong>${mun}, ${dep}</strong>. ${cropTxt}, periodo ${per}.`;
+
+  $("api-call").textContent=`POST /predict {"municipio":"${mun}","cultivo":"${state.crop}","variante":"${v}","periodo":"${per}","escenario":"nino|neutro|nina"}`;
+
+  // Tarjetas de escenario
+  const nN=P.neutro.y;
+  $("scen-grid").innerHTML=["nino","neutro","nina"].map(sc=>{
+    const p=P[sc], diff=(p.y-nN)/nN;
+    const cls = sc==="neutro"?"flat":diff<0?"down":"up";
+    const dtxt = sc==="neutro" ? "Escenario de referencia" : `${pct(diff)} frente a neutro (${diff<0?"−":"+"}${fmt(Math.abs(p.y-nN),d)} t/ha)`;
+    return `<article class="scen ${sc} ${sc==="nino"?"current":""}">
+      <h3>${SCN[sc]} ${sc==="nino"?'<span class="tag">Fase vigente</span>':""}</h3>
+      <p class="val">${fmt(p.y,d)}<small>t/ha</small></p>
+      <p class="ci">Intervalo 80%: ${fmt(p.lo,d)} – ${fmt(p.hi,d)}</p>
+      <p class="delta ${cls}">${dtxt}</p>
+    </article>`;
+  }).join("");
+
+  // Gráfica de rangos
+  drawRanges(P,d);
+
+  const loss=(P.neutro.y-P.nino.y);
+  const area = {riego:850, secano_mec:1200, secano_man:300, resto:900, criolla:250, azucar:4200, panelera:1100}[v] * (0.6+rng(hash(mun))()*0.8);
+  $("insight").innerHTML = `Si se mantiene El Niño, el rendimiento esperado en ${mun} sería ${fmt(Math.abs((P.nino.y-nN)/nN*100),1)} % menor que en un periodo neutro. Con el área sembrada del último periodo (~${fmt(area,0)} ha), equivale a unas <strong>${fmt(loss*area,0)} t menos</strong> de ${c.label.toLowerCase()}.`;
+
+  // Indicadores
+  const H=history(dep,mun,v);
+  const last=H[H.length-1], med=[...H].map(h=>h.y).sort((a,b)=>a-b)[Math.floor(H.length/2)];
+  const ninoObs=H.filter(h=>h.ph==="nino"), otherObs=H.filter(h=>h.ph!=="nino");
+  const avg=a=>a.reduce((s,h)=>s+h.y,0)/a.length;
+  const obsDiff = ninoObs.length? (avg(ninoObs)-avg(otherObs))/avg(otherObs) : null;
+  $("kpis").innerHTML=`
+    <div class="panel kpi"><div class="k-lbl"><span class="mk">4</span>Mediana histórica del municipio</div><div class="k-val">${fmt(med,d)} <small>t/ha</small></div><div class="k-foot">${H[0].p}–${last.p}</div></div>
+    <div class="panel kpi"><div class="k-lbl">Último periodo observado</div><div class="k-val">${fmt(last.y,d)} <small>t/ha</small></div><div class="k-foot">${last.p}, fase ${SCN[last.ph].toLowerCase()}</div></div>
+    <div class="panel kpi"><div class="k-lbl">Mediana nacional de la variante</div><div class="k-val">${fmt(vv.nat,d)} <small>t/ha</small></div><div class="k-foot">EVA 2019–2025, todos los municipios</div></div>
+    <div class="panel kpi"><div class="k-lbl">Diferencia observada en El Niño</div><div class="k-val" style="color:${obsDiff!==null&&obsDiff<0?"var(--nino)":"var(--ink)"}">${obsDiff===null?"Sin dato":pct(obsDiff)}</div><div class="k-foot">${obsDiff===null?"Ningún año completo en El Niño":`${ninoObs.map(h=>h.p).join(" y ")} frente al resto`}</div></div>`;
+
+  drawHistory(H,vv.nat,d);
+  drawVariants();
+  drawRank(per);
+}
+
+/* ---------- Gráfica de rangos por escenario ---------- */
+function drawRanges(P,d){
+  const W=900,H=120,L=90,R=30;
+  const all=Object.values(P).flatMap(p=>[p.lo,p.hi]);
+  let mn=Math.min(...all), mx=Math.max(...all); const pad=(mx-mn)*0.15; mn-=pad; mx+=pad;
+  const x=v=>L+(v-mn)/(mx-mn)*(W-L-R);
+  const rows=["nino","neutro","nina"];
+  const col={nino:CSSV("--nino"),neutro:CSSV("--neutro"),nina:CSSV("--nina")};
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img">`;
+  const ticks=5;
+  for(let i=0;i<=ticks;i++){const v=mn+(mx-mn)*i/ticks; s+=`<line x1="${x(v)}" x2="${x(v)}" y1="8" y2="${H-22}" stroke="${CSSV("--line")}"/><text x="${x(v)}" y="${H-6}" text-anchor="middle" font-size="11" fill="${CSSV("--muted")}">${fmt(v,d)}</text>`;}
+  rows.forEach((r,i)=>{
+    const y=20+i*30, p=P[r];
+    s+=`<text x="${L-10}" y="${y+4}" text-anchor="end" font-size="12" fill="${CSSV("--ink")}">${SCN[r]}</text>`;
+    s+=`<line x1="${x(p.lo)}" x2="${x(p.hi)}" y1="${y}" y2="${y}" stroke="${col[r]}" stroke-width="8" stroke-linecap="round" opacity=".35"/>`;
+    s+=`<circle cx="${x(p.y)}" cy="${y}" r="7" fill="${col[r]}" stroke="${CSSV("--surface")}" stroke-width="2"/>`;
+  });
+  s+=`<text x="${W-R}" y="${H-6}" text-anchor="end" font-size="11" fill="${CSSV("--muted")}"></text></svg>`;
+  $("range-chart").innerHTML=s;
+}
+
+/* ---------- Histórico ---------- */
+function drawHistory(Hs,nat,d){
+  const W=640,H=260,L=46,R=14,T=14,B=34;
+  const ys=Hs.map(h=>h.y).concat([nat]);
+  let mn=Math.min(...ys), mx=Math.max(...ys); const pad=(mx-mn)*0.25||1; mn=Math.max(0,mn-pad); mx+=pad;
+  const n=Hs.length, step=(W-L-R)/n;
+  const x=i=>L+step*(i+0.5), y=v=>T+(1-(v-mn)/(mx-mn))*(H-T-B);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Rendimiento histórico">`;
+  Hs.forEach((h,i)=>{ if(h.ph!=="neutro"){ s+=`<rect x="${L+step*i}" y="${T}" width="${step}" height="${H-T-B}" fill="${CSSV(h.ph==="nino"?"--nino-soft":"--nina-soft")}"/>`; }});
+  for(let i=0;i<=4;i++){const v=mn+(mx-mn)*i/4; s+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="${CSSV("--line")}" stroke-dasharray="${i?"2 3":""}"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end" font-size="10.5" fill="${CSSV("--muted")}">${fmt(v,d)}</text>`;}
+  s+=`<line x1="${L}" x2="${W-R}" y1="${y(nat)}" y2="${y(nat)}" stroke="${CSSV("--muted")}" stroke-width="1.5" stroke-dasharray="6 4"/>`;
+  s+=`<polyline fill="none" stroke="${CSSV("--primary")}" stroke-width="2.5" points="${Hs.map((h,i)=>`${x(i)},${y(h.y)}`).join(" ")}"/>`;
+  Hs.forEach((h,i)=>{ s+=`<circle cx="${x(i)}" cy="${y(h.y)}" r="3.5" fill="${CSSV("--primary")}"><title>${h.p}: ${fmt(h.y,d)} t/ha</title></circle>`;
+    s+=`<text x="${x(i)}" y="${H-12}" text-anchor="middle" font-size="10" fill="${CSSV("--muted")}">${h.p}</text>`; });
+  s+=`<text x="${L}" y="${T-2}" font-size="10.5" fill="${CSSV("--muted")}">t/ha</text></svg>`;
+  $("hist").innerHTML=s;
+}
+
+/* ---------- Variantes ---------- */
+function drawVariants(){
+  const {dep,mun}=state, vs=GEO[dep][mun].filter(v=>cropOf(v)===state.crop);
+  const c=CROPS[state.crop];
+  $("var-sub").textContent = vs.length>1
+    ? "Rendimiento esperado de cada variante reportada en el municipio, en los tres escenarios."
+    : "Este municipio solo reporta una variante; se compara con la mediana nacional de las demás.";
+  const rows = vs.length>1 ? vs.map(v=>({v,P:predict(dep,mun,v),local:true}))
+             : Object.keys(c.variants).map(v=>({v,P:vs.includes(v)?predict(dep,mun,v):{nino:{y:c.variants[v].nat*(1+c.variants[v].eff.nino)},neutro:{y:c.variants[v].nat},nina:{y:c.variants[v].nat*(1+c.variants[v].eff.nina)}},local:vs.includes(v)}));
+  const W=420, rowH=64, L=128, R=40, H=rows.length*rowH+18;
+  const mx=Math.max(...rows.flatMap(r=>["nino","neutro","nina"].map(s=>r.P[s].y)))*1.05;
+  const x=v=>L+v/mx*(W-L-R);
+  const col={nino:CSSV("--nino"),neutro:CSSV("--neutro"),nina:CSSV("--nina")};
+  const d=dec(rows[0].v);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Comparación de variantes" style="min-width:360px">`;
+  rows.forEach((r,i)=>{
+    const y0=8+i*rowH;
+    s+=`<text x="${L-10}" y="${y0+28}" text-anchor="end" font-size="12" font-weight="${r.v===state.v?700:400}" fill="${CSSV("--ink")}">${c.variants[r.v].label}</text>`;
+    if(!r.local) s+=`<text x="${L-10}" y="${y0+42}" text-anchor="end" font-size="10" fill="${CSSV("--muted")}">mediana nacional</text>`;
+    ["nino","neutro","nina"].forEach((sc,j)=>{
+      const yy=y0+6+j*16, w=x(r.P[sc].y)-L;
+      s+=`<rect x="${L}" y="${yy}" width="${w}" height="12" rx="2" fill="${col[sc]}" opacity="${r.local?1:.45}"/>`;
+      s+=`<text x="${L+w+5}" y="${yy+10}" font-size="10.5" fill="${CSSV("--muted")}">${fmt(r.P[sc].y,d)}</text>`;
+    });
+  });
+  s+=`</svg>`;
+  $("variants").innerHTML=s;
+}
+
+/* ---------- Ranking departamental ---------- */
+function drawRank(per){
+  const {dep,v}=state, vv=CROPS[state.crop].variants[v];
+  const ms=Object.entries(GEO[dep]).filter(([m,vs])=>vs.includes(v)).map(([m])=>{
+    const P=predict(dep,m,v); return {m, diff:(P.nino.y-P.neutro.y)/P.neutro.y};
+  }).sort((a,b)=>a.diff-b.diff);
+  $("rank-sub").textContent=`Cambio del rendimiento esperado bajo El Niño frente al escenario neutro: ${vv.label.toLowerCase()}, ${dep}, periodo ${per}.`;
+  if(!ms.length){ $("rank").innerHTML=`<li class="empty">Ningún otro municipio del departamento reporta esta variante.</li>`; return; }
+  const mx=Math.max(...ms.map(r=>Math.abs(r.diff)));
+  $("rank").innerHTML=ms.map(r=>`<li class="${r.m===state.mun?"sel":""}"><span>${r.m}</span><span class="bar"><span style="width:${Math.abs(r.diff)/mx*100}%"></span></span><span class="pct">${pct(r.diff)}</span></li>`).join("");
+}
+
+/* ======================================================================
+   EVENTOS
+   ====================================================================== */
+$("dep").addEventListener("change",e=>{state.dep=e.target.value; refreshControls(); render();});
+$("mun").addEventListener("change",e=>{state.mun=e.target.value; fillCrop(); fillVar(); fillPer(); render();});
+$("cult").addEventListener("click",e=>{const b=e.target.closest("button"); if(!b||b.disabled) return; state.crop=b.dataset.k; fillCrop(); fillVar(); fillPer(); render();});
+$("var").addEventListener("change",e=>{state.v=e.target.value; render();});
+$("per").addEventListener("change",render);
+$("run").addEventListener("click",render);
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",render);
+
+// #anotada muestra los números de referencia usados en la figura del reporte
+if(location.hash==="#anotada") document.body.classList.add("annot");
+window.addEventListener("hashchange",()=>document.body.classList.toggle("annot",location.hash==="#anotada"));
+
+fillDep(); refreshControls(); render();
+</script>
+</body>
+</html>
