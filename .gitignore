@@ -10,6 +10,8 @@ data/processed/*
 
 # Editor, R y MLflow local
 .dvc/cache/
+
+.venv/
 .Rhistory
 .vscode/
 mlruns/
