@@ -52,7 +52,7 @@ Nota aclaratoria: las fases ENSO definidas manualmente en `src/analisis_arroz_en
 
 ## Entrega 2: modelaje y evaluación
 
-El cuaderno [`cuaderno y mockup/cuaderno_entrega2_proyecto_DSA.ipynb`](cuaderno%20y%20mockup/cuaderno_entrega2_proyecto_DSA.ipynb) documenta el proceso completo de modelaje y testeo. La preparación del dataset se realiza con `src/construir_dataset.py` y genera `data/processed/dataset_modelo.csv`, junto con archivos de trazabilidad y filas excluidas.
+El cuaderno [`cuaderno y mockup/cuaderno_entrega_2_proyecto_DSA.ipynb`](cuaderno%20y%20mockup/cuaderno_entrega_2_proyecto_DSA.ipynb) documenta el proceso completo de modelaje y testeo. La preparación del dataset se realiza con `src/construir_dataset.py` y genera `data/processed/dataset_modelo.csv`, junto con archivos de trazabilidad y filas excluidas.
 
 ### Diseño experimental
 
