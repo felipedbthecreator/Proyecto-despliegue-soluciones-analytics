@@ -1,0 +1,64 @@
+# Hiperparámetros y modelo final
+
+## Instrucciones para ejecutarlo
+
+1. Encienda la instancia de MLflow en AWS (`mlflow-arroz-enso`) y copie su **IPv4 pública** desde la consola de EC2. Cambia cada vez que la instancia se reinicia.
+2. Desde la raíz del repositorio, en PowerShell, reemplace `<IP-EC2>` por esa IP:
+
+```powershell
+pip install -r requirements-modelo.txt
+$env:MLFLOW_TRACKING_URI = "http://<IP-EC2>:5000"   # ej.: http://44.223.34.166:5000
+$env:AUTOR = "nombre"
+python src/tuning.py --datos tablero/datos/dataset_modelo.csv
+```
+
+3. Verifique en `http://<IP-EC2>:5000` que aparecen los experimentos `eva-rendimiento-arroz`, `eva-rendimiento-papa` y `eva-rendimiento-cana`. Si no se define `MLFLOW_TRACKING_URI`, los runs se guardan en `./mlruns` y no llegan al servidor.
+
+El script genera:
+
+- `reports/tuning_resultados.csv`: todas las configuraciones probadas con sus métricas.
+- `reports/hiperparametros.csv`: la configuración elegida por cultivo.
+- `models/rendimiento_<cultivo>.pkl` y `.json`: el modelo final y sus datos, que usa la API.
+
+## Qué se probó
+
+Por cultivo se probaron 169 configuraciones, todas registradas en MLflow con la etiqueta `etapa=tuning`:
+
+| Modelo | Hiperparámetro | Valores |
+|---|---|---|
+| Naive | ninguno | — |
+| Ridge | alpha | 0.1, 1, 10, 100 |
+| | suavizado | 2, 5, 10 |
+| HGB | learning_rate | 0.03, 0.1 |
+| | max_depth | 3, 6, sin límite |
+| | min_samples_leaf | 20, 50 |
+| | l2_regularization | 0, 1 |
+| | suavizado | 2, 5, 10 |
+| Ridge y HGB | target_log (modelar el logaritmo del rendimiento) | sí, no |
+
+En HGB quedan fijos `max_iter=100` y `random_state=42`. `suavizado` controla cuánto se acerca el histórico de un municipio con pocos registros a la mediana de su variante: con 10, un municipio con 3 registros pesa 3/13 y la mediana 10/13.
+
+La grilla incluye los valores por defecto de la Entrega 2, para comparar contra esa ejecución.
+
+## Cómo se eligió
+
+1. Se entrena con 2019–2023 y se mide el RMSE en 2024 (validación).
+2. Se escoge la configuración con menor RMSE de validación.
+3. Esa configuración se reentrena con 2019–2024 y se evalúa una sola vez en 2025 (prueba).
+4. El modelo final queda en MLflow con `etapa=final` y en el Model Registry como `rendimiento-arroz`, `rendimiento-papa` y `rendimiento-cana`.
+
+El intervalo del 80 % que devuelve la API sale de los errores en validación de cada variante: percentiles 10 y 90 del cociente entre el valor real y el estimado.
+
+## Resultado
+
+| Cultivo | Modelo | target_log | learning_rate | max_depth | min_samples_leaf | l2 | suavizado |
+|---|---|---|---|---|---|---|---|
+| Arroz | | | | | | | |
+| Papa | | | | | | | |
+| Caña | | | | | | | |
+
+| Cultivo | RMSE naive (val.) | RMSE HGB por defecto (val.) | RMSE elegido (val.) | RMSE El Niño 2023 | RMSE prueba 2025 | R² prueba |
+|---|---|---|---|---|---|---|
+| Arroz | | | | | | |
+| Papa | | | | | | |
+| Caña | | | | | | |

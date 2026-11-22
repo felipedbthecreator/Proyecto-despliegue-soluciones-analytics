@@ -49,7 +49,7 @@ def git_commit() -> str:
 
 def entrenar(cultivo, modelo, params=None, target_log=False, usar_area=False,
              evaluar_test=False, ruta_datos=DATOS, experimento=None, nombre_run=None,
-             registrar_modelo=True):
+             registrar_modelo=True, etapa="base", devolver_modelo=False):
     params = dict(params or {})
     df = cargar(ruta_datos)
     feats, _ = columnas(cultivo, usar_area)
@@ -62,7 +62,7 @@ def entrenar(cultivo, modelo, params=None, target_log=False, usar_area=False,
     mlflow.set_experiment(experimento or f"eva-rendimiento-{slug(cultivo)}")
     with mlflow.start_run(run_name=nombre_run or f"{modelo}-{slug(cultivo)}") as run:
         mlflow.set_tags({"cultivo": cultivo, "modelo": modelo, "git_commit": git_commit(),
-                         "datos_md5": md5(ruta_datos), "autor": os.getenv("AUTOR", "sin_autor")})
+                         "datos_md5": md5(ruta_datos), "autor": os.getenv("AUTOR", "sin_autor"),"etapa": etapa})
         mlflow.log_params({"cultivo": cultivo, "modelo": modelo, "target_log": target_log,
                            "usar_area": usar_area, "n_train": len(tr), "n_val": len(va),
                            "variables": ",".join(feats), **params})
@@ -96,6 +96,8 @@ def entrenar(cultivo, modelo, params=None, target_log=False, usar_area=False,
         print(f"[{cultivo} | {modelo}] run {run.info.run_id}")
         for k in sorted(k for k in res if not k.startswith("delta_") or k.count("_") == 2):
             print(f"  {k:>22}: {res[k]:.4f}")
+        if devolver_modelo:
+            return run.info.run_id, res, final
         return run.info.run_id, res
 
 

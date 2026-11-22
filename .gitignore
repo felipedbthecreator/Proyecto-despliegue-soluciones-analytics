@@ -16,3 +16,5 @@ data/processed/*
 .vscode/
 mlruns/
 mlflow.db
+mlartifacts/
+*.db
