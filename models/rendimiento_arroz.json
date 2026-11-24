@@ -1,0 +1,70 @@
+{
+  "cultivo": "Arroz",
+  "modelo": "hgb",
+  "target_log": true,
+  "hiperparametros": {
+    "learning_rate": 0.1,
+    "max_depth": null,
+    "min_samples_leaf": 20,
+    "l2_regularization": 0.0,
+    "suavizado": 10.0,
+    "max_iter": 100,
+    "early_stopping": "auto",
+    "random_state": 42
+  },
+  "variables": [
+    "cod_mpio",
+    "variante",
+    "cod_depto",
+    "semestre",
+    "anio",
+    "roni_medio",
+    "roni_medio_previo"
+  ],
+  "run_id": "7630ec5319b54221a36309e99ee669a4",
+  "registro": {
+    "nombre": "rendimiento-arroz",
+    "version": 1
+  },
+  "sklearn_version": "1.9.1",
+  "entrenado_con": "2019-2024 (entrenamiento + validación)",
+  "evaluado_en": "2025",
+  "metricas": {
+    "train_rmse": 0.5764,
+    "train_mae": 0.3845,
+    "train_r2": 0.9252,
+    "train_wape": 0.0842,
+    "val_rmse": 0.78,
+    "val_mae": 0.5372,
+    "val_r2": 0.8519,
+    "val_wape": 0.1194,
+    "delta_nino_pct": -0.2351,
+    "delta_nina_pct": 1.0048,
+    "nino2023_rmse": 0.7597,
+    "nino2023_mae": 0.5285,
+    "nino2023_r2": 0.8568,
+    "nino2023_wape": 0.1189,
+    "test_rmse": 0.7206,
+    "test_mae": 0.4724,
+    "test_r2": 0.8667,
+    "test_wape": 0.106
+  },
+  "intervalo_80_factores": {
+    "Arroz riego": [
+      0.8,
+      1.1744
+    ],
+    "Arroz secano manual": [
+      0.7807,
+      1.2785
+    ],
+    "Arroz secano mecanizado": [
+      0.8136,
+      1.1655
+    ],
+    "_global": [
+      0.7972,
+      1.2133
+    ]
+  }
+}
