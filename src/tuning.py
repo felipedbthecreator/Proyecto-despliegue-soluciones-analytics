@@ -13,6 +13,7 @@ El servidor de MLflow se toma de MLFLOW_TRACKING_URI; sin ella, los runs quedan 
 import argparse
 import json
 import sys
+from importlib.metadata import version
 from itertools import product
 from pathlib import Path
 
@@ -90,20 +91,28 @@ def final(cultivo, elegido, ruta_datos):
         nombre_run=f"final-{modelo}", registrar_modelo=True, etapa="final", devolver_modelo=True)
 
     nombre = f"rendimiento-{slug(cultivo)}"
-    version = None
-    try:
-        version = mlflow.register_model(f"runs:/{run_id}/modelo", nombre).version
-    except Exception as e:  # noqa: BLE001 - el registro no debe tumbar la exportación local
-        print(f"  (no se pudo registrar en el Model Registry: {e})")
+    version_registro = mlflow.register_model(
+        f"runs:/{run_id}/modelo",
+        nombre,
+    ).version
 
     df = cargar(ruta_datos)
     feats, _ = columnas(cultivo)
+    versiones = {
+        "python": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
+        "numpy": version("numpy"),
+        "pandas": version("pandas"),
+        "scikit-learn": version("scikit-learn"),
+        "mlflow": version("mlflow"),
+        "cloudpickle": version("cloudpickle"),
+    }
     meta = {
         "cultivo": cultivo, "modelo": modelo, "target_log": tlog,
         "hiperparametros": {**p, **({"random_state": 42} if modelo == "hgb" else {})},
         "variables": feats, "run_id": run_id,
-        "registro": {"nombre": nombre, "version": version},
-        "sklearn_version": sklearn.__version__,   # la API debe usar la misma versión
+        "registro": {"nombre": nombre, "version": version_registro},
+        "versiones": versiones,
+        "sklearn_version": sklearn.__version__,
         "entrenado_con": "2019-2024 (entrenamiento + validación)", "evaluado_en": "2025",
         "metricas": {k: round(v, 4) for k, v in res.items()
                      if k.split("_")[0] in {"train", "val", "test", "nino2023"}
