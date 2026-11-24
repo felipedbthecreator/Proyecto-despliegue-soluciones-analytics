@@ -112,7 +112,7 @@ python src/tuning.py --datos tablero/datos/dataset_modelo.csv
 
 En PowerShell, la variable se configura con `$env:MLFLOW_TRACKING_URI = "http://<IP-EC2>:5000"`.
 
-Las dependencias críticas quedan fijadas en `requirements-modelo.txt`: pandas, NumPy, scikit-learn, MLflow, cloudpickle y setuptools. Además, el archivo JSON de cada modelo guarda las versiones exactas de Python y las bibliotecas utilizadas. El script genera:
+Las dependencias críticas quedan fijadas en `requirements-modelo.txt` (scikit-learn 1.9.1, MLflow 3.18.0, Python 3.13), las mismas de la corrida en EC2 y de la API. Además, el archivo JSON de cada modelo guarda las versiones exactas de Python y las bibliotecas utilizadas. El script genera:
 
 - `reports/tuning_resultados.csv`: métricas de las 169 configuraciones por cultivo.
 - `reports/hiperparametros.csv`: configuración elegida y métricas finales.
@@ -149,7 +149,7 @@ Los datos descriptivos del tablero provienen del dataset EVA–RONI. Mientras la
 
 ### Modelo final
 
-En los tres cultivos se seleccionó HistGradientBoosting. RMSE en prueba (2025): arroz 0,73 t/ha (R² 0,86), papa 4,71 t/ha (R² 0,65) y caña 12,01 t/ha (R² 0,82). El detalle está en `docs/hiperparametros.md`.
+En los tres cultivos se seleccionó HistGradientBoosting. RMSE en prueba (2025): arroz 0,72 t/ha (R² 0,87), papa 4,68 t/ha (R² 0,65) y caña 12,01 t/ha (R² 0,82). El detalle está en `docs/hiperparametros.md`.
 
 ### API
 
