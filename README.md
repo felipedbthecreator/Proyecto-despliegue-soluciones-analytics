@@ -7,7 +7,7 @@
 
 Este proyecto, desarrollado en el curso Despliegue de soluciones analíticas de la Maestría en Inteligencia de Análisis de Datos (Universidad de los Andes), busca estimar el rendimiento agrícola municipal (toneladas por hectárea) de arroz, papa y caña de azúcar los cuales son muy importantes en la producción agricola de Colombia, y explorar cómo cambia bajo distintos escenarios climáticos, en particular frente al fenómeno de El Niño. Su insumo principal son las Evaluaciones Agropecuarias Municipales (EVA) de la UPRA, publicadas como datos abiertos en datos.gov.co, que reportan por municipio y periodo el área sembrada y cosechada, la producción y el rendimiento entre 2019 y 2025. Como EVA no incluye variables climáticas, se incorpora el Índice Oceánico Relativo de El Niño (RONI) de NOAA para identificar si cada periodo corresponde a El Niño, La Niña o condiciones neutrales. Una de las preguntas de apoyo es si el arroz de secano, más dependiente de la lluvia, responde distinto al clima que el arroz de riego. El producto final será un prototipo con modelos supervisados empaquetados, una API que sirva las predicciones y un tablero para consultarlas por municipio, cultivo y escenario, desplegado con contenedores Docker.
 
-Este repositorio incluye la Entrega 1, con la descarga reproducible de los datos desde la API de datos.gov.co, su limpieza y transformación, la exploración inicial y la documentación de la maqueta del tablero, y la Entrega 2, con el modelaje, la evaluación experimental y el desarrollo funcional del tablero. El código se versiona con Git y los datos con DVC, de modo que cualquier integrante del equipo pueda reproducir el trabajo clonando el repositorio y recuperando los datos con `dvc pull`. Las decisiones de limpieza, las limitaciones de la fuente y los hallazgos de la exploración se detallan en los cuadernos Jupyter que hacen parte de este repositorio.
+Este repositorio incluye la Entrega 1, con la descarga reproducible de los datos desde la API de datos.gov.co, su limpieza y transformación, la exploración inicial y la documentación de la maqueta del tablero, la Entrega 2, con el modelaje, la evaluación experimental y el desarrollo funcional del tablero, y la Entrega 3, con el ajuste de hiperparámetros, la API de inferencia y el despliegue conjunto de API y tablero con Docker. El código se versiona con Git y los datos con DVC, de modo que cualquier integrante del equipo pueda reproducir el trabajo clonando el repositorio y recuperando los datos con `dvc pull`. Las decisiones de limpieza, las limitaciones de la fuente y los hallazgos de la exploración se detallan en los cuadernos Jupyter que hacen parte de este repositorio.
 
 La descarga usa el token opcional `SOCRATA_TOKEN` 
 
@@ -134,6 +134,52 @@ El tablero Dash implementado en `tablero/app.py` responde la pregunta de negocio
 
 Los datos descriptivos del tablero provienen del dataset EVA–RONI. Mientras la API real no esté desplegada, `tablero/estimador_provisional.py` ofrece una respuesta local basada en la línea base municipal ajustada por sensibilidad histórica al RONI y la interfaz muestra una advertencia para distinguirla del modelo seleccionado. La API simulada en `tablero/pruebas/api_simulada.py` permite probar el contrato antes del despliegue.
 
+## Entrega 3: API y despliegue
+
+### Estructura
+
+| Carpeta / archivo | Contenido |
+|---|---|
+| `src/tuning.py`, `docs/hiperparametros.md` | Ajuste de hiperparámetros (169 configuraciones por cultivo), selección por RMSE de validación y modelo final reentrenado con 2019–2024 y evaluado en 2025. |
+| `models/` | Modelos finales (`rendimiento_<cultivo>.pkl`) y sus metadatos (`.json`: hiperparámetros, métricas, factores del intervalo del 80 %). |
+| `reports/` | Resultados del tuning y configuración elegida por cultivo. |
+| `api/` | API FastAPI (`main.py`), `requirements.txt` y `Dockerfile`. |
+| `tablero/` | Tablero Dash conectado a la API (ver `tablero/README.md`). |
+| `docker-compose.yml` | Levanta la API (puerto 8001) y el tablero (puerto 8050) juntos. |
+
+### Modelo final
+
+En los tres cultivos se seleccionó HistGradientBoosting. RMSE en prueba (2025): arroz 0,73 t/ha (R² 0,86), papa 4,71 t/ha (R² 0,65) y caña 12,01 t/ha (R² 0,82). El detalle está en `docs/hiperparametros.md`.
+
+### API
+
+| Método | Ruta | Uso |
+|---|---|---|
+| GET | `/health` | Estado y nombre de los modelos cargados. |
+| GET | `/modelos` | Hiperparámetros, métricas y versión de registro de cada modelo. |
+| POST | `/predict` | Rendimiento esperado (t/ha) e intervalo del 80 % para un municipio, cultivo, variante, periodo y escenario. |
+| POST | `/predict/lote` | Varias peticiones `/predict` en una sola llamada (ranking del tablero). |
+
+La documentación interactiva queda en `http://<host>:8001/docs`. El escenario se traduce a RONI = 1 / 0 / −1 (y `prop_nino`, `prop_nina` en caña); el RONI del periodo anterior se toma del archivo de NOAA/CPC.
+
+### Despliegue
+
+```bash
+# Local o en una instancia EC2 con Docker instalado, desde la raíz del repositorio
+docker compose up -d --build
+# API:     http://<host>:8001/docs
+# Tablero: http://<host>:8050
+```
+
+En EC2 deben abrirse en el grupo de seguridad los puertos 8001 y 8050. Sin Docker:
+
+```bash
+pip install -r api/requirements.txt
+uvicorn api.main:app --port 8001                       # terminal 1
+cd tablero && pip install -r requirements.txt
+API_URL=http://localhost:8001 python app.py            # terminal 2
+```
+
 ## Limitaciones y siguientes pasos
 
 - La ventana 2019–2025 contiene pocos periodos y pocos episodios climáticos extremos; el backtest de 2023 es evidencia exploratoria y no permite establecer causalidad.
@@ -141,7 +187,7 @@ Los datos descriptivos del tablero provienen del dataset EVA–RONI. Mientras la
 - EVA puede presentar heterogeneidad municipal, cambios de medición y diferencias de cobertura entre variantes.
 - Los escenarios son contrafactuales determinísticos y no probabilidades de ocurrencia climática. Una sensibilidad estimada por el modelo no equivale a un efecto causal.
 - Los intervalos de predicción deben calcularse y validarse a partir del modelo final antes de utilizarse en decisiones operativas; el estimador provisional no debe presentarse como el modelo productivo.
-- La Entrega 3 debe conectar la API real, conservar el contrato de respuesta (`rendimiento_t_ha`, `intervalo_80`, `modelo`), registrar los artefactos en MLflow y verificar que las predicciones servidas correspondan al modelo seleccionado.
+- La API sirve el modelo final seleccionado (HGB por cultivo) con el contrato de respuesta previsto (`rendimiento_t_ha`, `intervalo_80`, `modelo`); los artefactos quedan en MLflow (Model Registry) y en `models/`.
 ## Maqueta del tablero
 
-La maqueta interactiva de la Entrega 1 está en `cuaderno y mockup/tablero_mockup.html` (se abre directamente en el navegador) y su documentación, con la relación de cada elemento con la pregunta de negocio, en `cuaderno y mockup/maqueta_tablero.md`. La implementación funcional de la Entrega 2 se encuentra en `tablero/`; mientras la API real no esté desplegada, utiliza el estimador provisional local descrito arriba.
+La maqueta interactiva de la Entrega 1 está en `cuaderno y mockup/tablero_mockup.html` (se abre directamente en el navegador) y su documentación, con la relación de cada elemento con la pregunta de negocio, en `cuaderno y mockup/maqueta_tablero.md`. La implementación funcional se encuentra en `tablero/`; desde la Entrega 3 consume la API del modelo y solo recurre al estimador provisional local si la API no responde.

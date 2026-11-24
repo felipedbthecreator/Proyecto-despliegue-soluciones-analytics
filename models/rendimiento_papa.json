@@ -1,0 +1,74 @@
+{
+  "cultivo": "Papa",
+  "modelo": "hgb",
+  "target_log": true,
+  "hiperparametros": {
+    "learning_rate": 0.1,
+    "max_depth": null,
+    "min_samples_leaf": 20,
+    "l2_regularization": 0.0,
+    "suavizado": 10.0,
+    "max_iter": 100,
+    "early_stopping": "auto",
+    "random_state": 42
+  },
+  "variables": [
+    "cod_mpio",
+    "variante",
+    "cod_depto",
+    "semestre",
+    "anio",
+    "roni_medio",
+    "roni_medio_previo"
+  ],
+  "run_id": "10ad9c1f0bb9452f96999aad436973b2",
+  "registro": {
+    "nombre": "rendimiento-papa",
+    "version": 1
+  },
+  "versiones": {
+    "python": "3.11.18",
+    "numpy": "1.26.4",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.6.1",
+    "mlflow": "2.12.2",
+    "cloudpickle": "3.1.1"
+  },
+  "sklearn_version": "1.6.1",
+  "entrenado_con": "2019-2024 (entrenamiento + validación)",
+  "evaluado_en": "2025",
+  "metricas": {
+    "train_rmse": 3.5411,
+    "train_mae": 2.0121,
+    "train_r2": 0.7908,
+    "train_wape": 0.1134,
+    "val_rmse": 4.773,
+    "val_mae": 2.7229,
+    "val_r2": 0.6371,
+    "val_wape": 0.1484,
+    "delta_nino_pct": -0.1221,
+    "delta_nina_pct": -0.0719,
+    "nino2023_rmse": 5.2143,
+    "nino2023_mae": 3.056,
+    "nino2023_r2": 0.537,
+    "nino2023_wape": 0.1702,
+    "test_rmse": 4.7072,
+    "test_mae": 2.7945,
+    "test_r2": 0.6491,
+    "test_wape": 0.1491
+  },
+  "intervalo_80_factores": {
+    "Papa criolla": [
+      0.8406,
+      1.1685
+    ],
+    "Papa todas menos criolla": [
+      0.7994,
+      1.3054
+    ],
+    "_global": [
+      0.8143,
+      1.2557
+    ]
+  }
+}

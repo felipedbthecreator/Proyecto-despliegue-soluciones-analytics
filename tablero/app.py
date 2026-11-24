@@ -135,7 +135,9 @@ app.layout = html.Div([
             html.P([html.Strong("Cómo leer estas cifras. "),
                     "El tablero compara escenarios: no pronostica el clima ni garantiza que la diferencia se deba solo "
                     "al clima. Entre 2019 y 2025 hubo dos semestres de El Niño (2019A y 2023B) y ningún año completo "
-                    "en esa fase, por lo que en caña el escenario de El Niño se estima con menos información. "
+                    "en esa fase, por lo que en caña el escenario de El Niño se estima con menos información. Por eso el modelo "
+                    "final (HGB) estima diferencias pequeñas entre escenarios: el histórico del municipio explica la mayor "
+                    "parte del rendimiento. "
                     "Fuentes: EVA 2019–2025 (UPRA, datos.gov.co) e índice RONI (NOAA/CPC)."], className="note"),
         ], className="main"),
     ], className="layout"),
@@ -179,8 +181,15 @@ def conectar_api(_, url):
               Output("banner-fuente", "className"), Input("estado-api", "data"))
 def mostrar_estado_api(estado):
     if estado.get("conectada"):
+        resumen = []
+        for cod, meta in (estado.get("metadatos") or {}).items():
+            met = meta.get("metricas", {})
+            if "test_rmse" in met:
+                resumen.append(f"{CULTIVOS[cod]['etiqueta']}: {meta['modelo'].upper()}, RMSE prueba 2025 "
+                               f"{fmt(met['test_rmse'], 2)} t/ha, R² {fmt(met['test_r2'], 2)}")
+        detalle = (" Modelos finales: " + "; ".join(resumen) + ".") if resumen else ""
         return (html.Span(estado["mensaje"], className="badge on"),
-                f"Predicciones servidas por la API del modelo ({estado['url']}).", "source-banner api")
+                f"Predicciones servidas por la API del modelo ({estado['url']}).{detalle}", "source-banner api")
     return (html.Span(f"No conectada · {estado['mensaje']}", className="badge off"),
             "API del modelo aún no conectada: las cifras de los escenarios son una estimación provisional local "
             "(línea base del municipio ajustada por su sensibilidad histórica al RONI), no el modelo seleccionado.",
@@ -280,7 +289,8 @@ def render(_, variante, periodo, estado_api, mpio, cultivo):
             clase, texto = "flat", "Sin diferencia apreciable frente a neutro"
         else:
             clase = "down" if dif < 0 else "up"
-            texto = f"{pct(dif)} frente a neutro ({'−' if dif < 0 else '+'}{fmt(abs(y - y_neu), d)} t/ha)"
+            d_dif = d if abs(y - y_neu) >= 10 ** -d else d + 1  # evita mostrar "−0,0 t/ha"
+            texto = f"{pct(dif)} frente a neutro ({'−' if dif < 0 else '+'}{fmt(abs(y - y_neu), d_dif)} t/ha)"
         vigente = esc == FASE["fase"]
         tarjetas.append(html.Article([
             html.H3([NOMBRE_ESC[esc], html.Span("Fase vigente", className="tag") if vigente else None]),
@@ -350,8 +360,10 @@ def render(_, variante, periodo, estado_api, mpio, cultivo):
 
     # ---- Ranking departamental de sensibilidad
     filas_rank = []
-    for cod, nombre in datos.municipios_con_variante(depto, variante):
-        pm = pred if cod == mpio else cliente_api.predecir_escenarios(estado_api, cod, nombre, cultivo, variante, periodo)[0]
+    mpios_depto = datos.municipios_con_variante(depto, variante)
+    preds_depto, _ = cliente_api.predecir_lote(estado_api, mpios_depto, cultivo, variante, periodo)
+    for cod, nombre in mpios_depto:
+        pm = pred if cod == mpio else preds_depto[cod]
         filas_rank.append((cod, nombre, pm["nino"]["rendimiento_t_ha"] / pm["neutro"]["rendimiento_t_ha"] - 1))
     filas_rank.sort(key=lambda r: r[2])
     max_abs = max(abs(r[2]) for r in filas_rank) or 1

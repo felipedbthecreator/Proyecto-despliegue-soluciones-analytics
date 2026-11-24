@@ -59,14 +59,20 @@ El intervalo del 80 % que devuelve la API sale de los errores en validación de 
 
 ## Resultado
 
+En los tres cultivos la configuración con menor RMSE de validación fue HGB. Resultados obtenidos con las versiones de `requirements-modelo.txt` (scikit-learn 1.6.1).
+
 | Cultivo | Modelo | target_log | learning_rate | max_depth | min_samples_leaf | l2 | suavizado |
 |---|---|---|---|---|---|---|---|
-| Arroz | | | | | | | |
-| Papa | | | | | | | |
-| Caña | | | | | | | |
+| Arroz | HGB | sí | 0.1 | sin límite | 20 | 1 | 10 |
+| Papa | HGB | sí | 0.1 | sin límite | 20 | 0 | 10 |
+| Caña | HGB | no | 0.1 | sin límite | 50 | 1 | 10 |
 
 | Cultivo | RMSE naive (val.) | RMSE HGB por defecto (val.) | RMSE elegido (val.) | RMSE El Niño 2023 | RMSE prueba 2025 | R² prueba |
 |---|---|---|---|---|---|---|
-| Arroz | | | | | | |
-| Papa | | | | | | |
-| Caña | | | | | | |
+| Arroz | 0.8594 | 0.7916 | 0.7743 | 0.7580 | 0.7305 | 0.8630 |
+| Papa | 5.2397 | 4.8029 | 4.7730 | 5.2143 | 4.7072 | 0.6491 |
+| Caña | 18.0920 | 17.2949 | 17.1344 | 15.2059 | 12.0103 | 0.8247 |
+
+El modelo final reconoce poco efecto del RONI una vez controla el histórico del municipio, el año y el semestre, en línea con lo reportado en la Entrega 2.
+
+Los archivos `reports/tuning_resultados.csv` y `reports/hiperparametros.csv` contienen el detalle, y `models/rendimiento_<cultivo>.pkl/.json` los modelos que sirve la API (`api/main.py`).
