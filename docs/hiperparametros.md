@@ -12,6 +12,10 @@ $env:AUTOR = "nombre"
 python src/tuning.py --datos tablero/datos/dataset_modelo.csv
 ```
 
+El archivo `requirements-modelo.txt` fija las versiones utilizadas al entrenar y exportar los
+modelos. Para cada modelo final se registra además en su JSON las versiones exactas de Python,
+NumPy, pandas, scikit-learn, MLflow y cloudpickle.
+
 3. Verifique en `http://<IP-EC2>:5000` que aparecen los experimentos `eva-rendimiento-arroz`, `eva-rendimiento-papa` y `eva-rendimiento-cana`. Si no se define `MLFLOW_TRACKING_URI`, los runs se guardan en `./mlruns` y no llegan al servidor.
 
 El script genera:
@@ -46,6 +50,10 @@ La grilla incluye los valores por defecto de la Entrega 2, para comparar contra 
 2. Se escoge la configuración con menor RMSE de validación.
 3. Esa configuración se reentrena con 2019–2024 y se evalúa una sola vez en 2025 (prueba).
 4. El modelo final queda en MLflow con `etapa=final` y en el Model Registry como `rendimiento-arroz`, `rendimiento-papa` y `rendimiento-cana`.
+
+El registro debe completar de forma satisfactoria antes de exportar los artefactos locales. Si
+MLflow no puede crear la versión del modelo, el script termina con error y no publica un JSON
+con una versión de registro nula.
 
 El intervalo del 80 % que devuelve la API sale de los errores en validación de cada variante: percentiles 10 y 90 del cociente entre el valor real y el estimado.
 
