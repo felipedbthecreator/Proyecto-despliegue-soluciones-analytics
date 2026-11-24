@@ -162,6 +162,11 @@ En los tres cultivos se seleccionó HistGradientBoosting. RMSE en prueba (2025):
 
 La documentación interactiva queda en `http://<host>:8001/docs`. El escenario se traduce a RONI = 1 / 0 / −1 (y `prop_nino`, `prop_nina` en caña); el RONI del periodo anterior se toma del archivo de NOAA/CPC.
 
+### Manuales
+
+- [Manual de usuario del tablero](docs/manual_usuario.md)
+- [Manual de instalación del tablero y la API](docs/manual_instalacion.md)
+
 ### Despliegue
 
 ```bash
