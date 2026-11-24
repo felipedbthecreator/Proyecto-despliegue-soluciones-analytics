@@ -1,0 +1,7 @@
+# La versión de scikit-learn debe coincidir con la que serializó models/*.pkl (ver requirements-modelo.txt)
+scikit-learn==1.9.1
+pandas>=2.1
+numpy>=1.26
+cloudpickle>=3.0
+fastapi>=0.110
+uvicorn[standard]>=0.29
