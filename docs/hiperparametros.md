@@ -59,20 +59,20 @@ El intervalo del 80 % que devuelve la API sale de los errores en validación de 
 
 ## Resultado
 
-En los tres cultivos la configuración con menor RMSE de validación fue HGB. Resultados obtenidos con las versiones de `requirements-modelo.txt` (scikit-learn 1.6.1).
+Resultados de la corrida en la instancia EC2 (MLflow 3.18.0, scikit-learn 1.9.1; versiones en `requirements-modelo.txt`). En los tres cultivos la configuración con menor RMSE de validación fue HGB, y las ejecuciones por defecto de la Entrega 2 se reproducen exactamente dentro de la grilla.
 
 | Cultivo | Modelo | target_log | learning_rate | max_depth | min_samples_leaf | l2 | suavizado |
 |---|---|---|---|---|---|---|---|
-| Arroz | HGB | sí | 0.1 | sin límite | 20 | 1 | 10 |
+| Arroz | HGB | sí | 0.1 | sin límite | 20 | 0 | 10 |
 | Papa | HGB | sí | 0.1 | sin límite | 20 | 0 | 10 |
 | Caña | HGB | no | 0.1 | sin límite | 50 | 1 | 10 |
 
 | Cultivo | RMSE naive (val.) | RMSE HGB por defecto (val.) | RMSE elegido (val.) | RMSE El Niño 2023 | RMSE prueba 2025 | R² prueba |
 |---|---|---|---|---|---|---|
-| Arroz | 0.8594 | 0.7916 | 0.7743 | 0.7580 | 0.7305 | 0.8630 |
-| Papa | 5.2397 | 4.8029 | 4.7730 | 5.2143 | 4.7072 | 0.6491 |
+| Arroz | 0.8594 | 0.8020 | 0.7800 | 0.7597 | 0.7206 | 0.8667 |
+| Papa | 5.2397 | 4.8182 | 4.7811 | 5.2461 | 4.6791 | 0.6532 |
 | Caña | 18.0920 | 17.2949 | 17.1344 | 15.2059 | 12.0103 | 0.8247 |
 
-El modelo final reconoce poco efecto del RONI una vez controla el histórico del municipio, el año y el semestre, en línea con lo reportado en la Entrega 2.
+Diferencia media estimada entre escenarios frente al neutro (métricas `delta_nino_pct` y `delta_nina_pct`, ya expresadas en %): arroz −0,24 % en El Niño y +1,00 % en La Niña; papa +0,31 % y +0,17 %; caña 0,00 % y +0,20 %. El modelo final reconoce poco efecto del RONI una vez controla el histórico del municipio, el año y el semestre.
 
 Los archivos `reports/tuning_resultados.csv` y `reports/hiperparametros.csv` contienen el detalle, y `models/rendimiento_<cultivo>.pkl/.json` los modelos que sirve la API (`api/main.py`).

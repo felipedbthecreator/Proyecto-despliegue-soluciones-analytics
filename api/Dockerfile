@@ -1,6 +1,6 @@
 # Imagen de la API. Se construye desde la raíz del repositorio:
 #   docker build -f api/Dockerfile -t api-rendimiento .
-FROM python:3.11-slim
+FROM python:3.13-slim
 WORKDIR /app
 COPY api/requirements.txt api/requirements.txt
 RUN pip install --no-cache-dir -r api/requirements.txt

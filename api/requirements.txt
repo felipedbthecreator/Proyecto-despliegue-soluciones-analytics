@@ -1,7 +1,7 @@
 # Mismas versiones de requirements-modelo.txt: models/*.pkl se serializó con ellas y la API debe cargarlos igual
-scikit-learn==1.6.1
-pandas==2.3.3
-numpy==1.26.4
-cloudpickle==3.1.1
+scikit-learn==1.9.1
+pandas==3.0.5
+numpy==2.5.3
+cloudpickle==3.1.2
 fastapi>=0.110
 uvicorn[standard]>=0.29
