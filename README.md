@@ -82,6 +82,45 @@ En conjunto, HGB fue la alternativa más eficaz para reducir errores grandes y e
 
 Los escenarios Niño, neutro y Niña son simulaciones condicionadas: reemplazan las variables climáticas del periodo, pero no pronostican la ocurrencia del fenómeno. Los deltas frente al escenario neutro se calculan globalmente y por variante.
 
+## Entrega 3: ajuste de hiperparámetros y modelo final
+
+El ajuste final se implementa en `src/tuning.py` y deja trazabilidad completa en MLflow. Por cada cultivo se prueban 169 configuraciones: una línea base `naive`, 24 configuraciones de Ridge y 144 de `HistGradientBoosting`.
+
+La búsqueda conserva una separación estrictamente temporal:
+
+- Entrenamiento: 2019–2023.
+- Validación y selección: 2024.
+- Prueba final única: 2025.
+
+La selección se realiza únicamente por menor RMSE de validación. El modelo ganador se reentrena con 2019–2024 y se evalúa una sola vez con 2025. Los resultados de tuning quedan etiquetados como `etapa=tuning` y el modelo final como `etapa=final`.
+
+El proceso registra los tres modelos en los experimentos:
+
+- `eva-rendimiento-arroz`
+- `eva-rendimiento-papa`
+- `eva-rendimiento-cana`
+
+Los registros finales reciben los nombres `rendimiento-arroz`, `rendimiento-papa` y `rendimiento-cana` en el Model Registry. El script exige que MLflow registre correctamente la versión antes de exportar los artefactos locales. Si el registro falla, termina con error y no crea archivos locales que parezcan representar un modelo registrado.
+
+Las ejecuciones se reproducen con:
+
+```bash
+pip install -r requirements-modelo.txt
+export MLFLOW_TRACKING_URI="http://<IP-EC2>:5000"
+python src/tuning.py --datos tablero/datos/dataset_modelo.csv
+```
+
+En PowerShell, la variable se configura con `$env:MLFLOW_TRACKING_URI = "http://<IP-EC2>:5000"`.
+
+Las dependencias críticas quedan fijadas en `requirements-modelo.txt`: pandas, NumPy, scikit-learn, MLflow, cloudpickle y setuptools. Además, el archivo JSON de cada modelo guarda las versiones exactas de Python y las bibliotecas utilizadas. El script genera:
+
+- `reports/tuning_resultados.csv`: métricas de las 169 configuraciones por cultivo.
+- `reports/hiperparametros.csv`: configuración elegida y métricas finales.
+- `models/rendimiento_<cultivo>.pkl`: modelo serializado para la API.
+- `models/rendimiento_<cultivo>.json`: metadatos, hiperparámetros, métricas, run de MLflow, registro y versiones.
+
+La grilla, la selección y las tablas pendientes de resultados están documentadas en [`docs/hiperparametros.md`](docs/hiperparametros.md).
+
 ## Tablero y preparación para despliegue
 
 El tablero Dash implementado en `tablero/app.py` responde la pregunta de negocio para un municipio, cultivo, variante y periodo. Incluye:
