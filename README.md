@@ -134,7 +134,7 @@ El tablero Dash implementado en `tablero/app.py` responde la pregunta de negocio
 
 Los datos descriptivos del tablero provienen del dataset EVA–RONI. Mientras la API real no esté desplegada, `tablero/estimador_provisional.py` ofrece una respuesta local basada en la línea base municipal ajustada por sensibilidad histórica al RONI y la interfaz muestra una advertencia para distinguirla del modelo seleccionado. La API simulada en `tablero/pruebas/api_simulada.py` permite probar el contrato antes del despliegue.
 
-## Entrega 3: modelo final, API y despliegue
+## Entrega 3: API y despliegue
 
 ### Estructura
 
@@ -149,7 +149,7 @@ Los datos descriptivos del tablero provienen del dataset EVA–RONI. Mientras la
 
 ### Modelo final
 
-En los tres cultivos se seleccionó HistGradientBoosting. RMSE en prueba (2025): arroz 0,72 t/ha (R² 0,87), papa 4,68 t/ha (R² 0,65) y caña 12,01 t/ha (R² 0,82). El detalle está en `docs/hiperparametros.md`.
+En los tres cultivos se seleccionó HistGradientBoosting. RMSE en prueba (2025): arroz 0,73 t/ha (R² 0,86), papa 4,71 t/ha (R² 0,65) y caña 12,01 t/ha (R² 0,82). El detalle está en `docs/hiperparametros.md`.
 
 ### API
 
